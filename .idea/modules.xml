@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FireDemo.iml" filepath="$PROJECT_DIR$/FireDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fire/fire.iml" filepath="$PROJECT_DIR$/fire/fire.iml" />
     </modules>
   </component>
 </project>
