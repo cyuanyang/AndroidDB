@@ -2,6 +2,8 @@ package com.fire.table;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 
 
 import com.fire.DBHelper;
@@ -12,6 +14,7 @@ import com.fire.sqlite.TableInfo;
 import com.fire.table.selector.Selector;
 import com.fire.table.selector.WhereInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,14 +49,30 @@ public class DBHelperImpl implements DBHelper {
     }
 
     @Override
-    public <T> List<T> find(Class<T> clazz) throws Exception {
-        Selector<T> selector = from(clazz);
-        return selector.find();
+    public <T> List<T> find(Class<T> clazz) {
+        try {
+            Selector<T> selector = from(clazz);
+            return selector.find();
+        }catch (Exception e){
+            if (DBBase.getBase().getConfig().isDebug){
+                Log.e(DBBase.TAG , "查询出现错误了");
+                e.printStackTrace();
+            }
+        }
+        return Collections.emptyList();
     }
 
     @Override
-    public <T> Selector<T> from(Class<T> clazz) throws Exception {
-        return Selector.from(DBBase.getBase().getTable(clazz));
+    public <T> Selector<T> from(Class<T> clazz) {
+        try {
+            return Selector.from(DBBase.getBase().getTable(clazz));
+        }catch (Exception e){
+            if (DBBase.getBase().getConfig().isDebug){
+                Log.e(DBBase.TAG , "查询出现错误了");
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -93,6 +112,41 @@ public class DBHelperImpl implements DBHelper {
             TableInfo<?> tableInfo = DBBase.getBase().getTable(clazz);
             SqlInfo sqlInfo = new SqlInfoBuilder<>().buildDeleteSqlInfo(tableInfo ,whereInfo);
             helper.exeSQL(sqlInfo.getSql() ,sqlInfo.getWhereArgs());
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            helper.close();
+        }
+    }
+
+    @Override
+    public void deleteById(@NonNull Class<?> clazz ,@NonNull String id) {
+        MySQLiteOpenHelper helper = MySQLiteOpenHelper.newInstance();
+        try {
+            TableInfo<?> tableInfo = DBBase.getBase().getTable(clazz);
+            WhereInfo whereInfo = WhereInfo.Builder.buildWhere(tableInfo.getTableId().getColumnName() , "=",id).build();
+            SqlInfo sqlInfo = new SqlInfoBuilder<>().buildDeleteSqlInfo(tableInfo ,whereInfo);
+            helper.exeSQL(sqlInfo.getSql() ,sqlInfo.getWhereArgs());
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            helper.close();
+        }
+    }
+
+    @Override
+    public void deleteById(List<?> objects) {
+        MySQLiteOpenHelper helper = MySQLiteOpenHelper.newInstance();
+        try {
+            for (Object obj : objects) {
+                TableInfo<?> tableInfo = DBBase.getBase().getTable(obj.getClass());
+                String id = tableInfo.getTableId().getFieldValue(obj)+"";
+                if (!TextUtils.isEmpty(id)){
+                    WhereInfo whereInfo = WhereInfo.Builder.buildWhere(tableInfo.getTableId().getColumnName() , "=",id).build();
+                    SqlInfo sqlInfo = new SqlInfoBuilder<>().buildDeleteSqlInfo(tableInfo ,whereInfo);
+                    helper.exeSQL(sqlInfo.getSql() ,sqlInfo.getWhereArgs());
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {

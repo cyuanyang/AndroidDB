@@ -26,6 +26,9 @@ public class TableInfo<T> {
 
     public TableInfo(Class<T> clazz) throws Exception {
         Table table = clazz.getAnnotation(Table.class);
+        if (table == null){
+            throw new IllegalArgumentException("传入的类没有用 Table 标注");
+        }
         this.tableName = table.name();
         this.columnInfoMap = setupColumns(clazz);
         for (ColumnInfo column: columnInfoMap.values()) {

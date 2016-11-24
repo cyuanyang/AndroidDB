@@ -28,9 +28,9 @@ public interface DBHelper {
      * @return 查到的数据集合
      * @throws Exception ""
      */
-    <T> List<T> find(Class<T> clazz) throws Exception;
+    <T> List<T> find(Class<T> clazz);
 
-    <T> Selector<T> from(Class<T> clazz) throws Exception;
+    <T> Selector<T> from(Class<T> clazz);
 
     /*********************************select***************************/
     /**
@@ -41,5 +41,24 @@ public interface DBHelper {
     <T> void update(@NonNull List<T> objs);
 
     /********************************* delete ************************/
+
+    /**
+     * 删除
+     * @param clazz 删除的表
+     * @param whereInfo 删除条件 为空则删除所有
+     */
     void delete(@NonNull Class<?> clazz, @Nullable WhereInfo whereInfo);
+
+    /**
+     * 删除某一条数据
+     * @param clazz 要删除的数据的model
+     * @param id 删除数据的id
+     */
+    void deleteById(@NonNull Class<?> clazz , @NonNull String id);
+
+    /**
+     * 根据id删除一组数据
+     * @param objects 传入的对象的id不为null 为null会忽略掉
+     */
+    void deleteById(List<?> objects);
 }

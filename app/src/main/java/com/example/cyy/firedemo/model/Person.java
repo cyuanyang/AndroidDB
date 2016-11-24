@@ -25,6 +25,9 @@ public class Person {
     @Column(name = "money")
     private long money;
 
+    @Column(name = "age")
+    private int age;
+
     @Column(name = "hot")
     private boolean hot;
 
@@ -77,5 +80,13 @@ public class Person {
 
     public void setHour(float hour) {
         this.hour = hour;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

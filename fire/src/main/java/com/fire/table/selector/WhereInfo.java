@@ -28,11 +28,11 @@ public class WhereInfo {
         whereLists.add(builder.toString());
     }
 
-    void and(String columnName , String op , String value){
+    public void and(String columnName , String op , String value){
         whereAppend("AND ",columnName , op , value);
     }
 
-    void or(String columnName , String op , String value){
+    public void or(String columnName , String op , String value){
         whereAppend("OR ",columnName , op , value);
     }
 
@@ -42,5 +42,32 @@ public class WhereInfo {
 
     public List<String> getArgs() {
         return args;
+    }
+
+    public static class Builder{
+
+        private WhereInfo whereInfo;
+
+        Builder(String columnName , String op , String value){
+            whereInfo = new WhereInfo(columnName,op ,value);
+        }
+
+        public Builder and(String columnName , String op , String value){
+            whereInfo.whereAppend("AND ",columnName , op , value);
+            return this;
+        }
+
+        public Builder or(String columnName , String op , String value){
+            whereInfo.whereAppend("OR ",columnName , op , value);
+            return this;
+        }
+
+        public WhereInfo build(){
+            return whereInfo;
+        }
+
+        public static Builder buildWhere(String columnName , String op , String value){
+            return new Builder(columnName,op , value);
+        }
     }
 }

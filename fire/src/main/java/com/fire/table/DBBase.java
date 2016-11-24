@@ -21,7 +21,7 @@ import java.util.List;
 
 public class DBBase {
 
-    private static final String TAG = "DBBase";
+    public static final String TAG = "DBBase";
 
     private static DBBase dbBase; //
     private Config mConfig; //数据库的配置数据
