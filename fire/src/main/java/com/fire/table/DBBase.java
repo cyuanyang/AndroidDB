@@ -48,9 +48,10 @@ public class DBBase {
         return dbBase;
     }
 
-    public void init(Application app, Config config){
+    public DBBase init(Application app, Config config){
         mApp = app;
         mConfig = config;
+        return this;
     }
 
     public void init(Application app , String name , int version){
@@ -58,6 +59,10 @@ public class DBBase {
         mConfig = new Config();
         mConfig.name = name;
         mConfig.version = version;
+    }
+
+    public <T> void creatTables(Class<T>[] clazzs){
+        createTablesIfNotExist(clazzs);
     }
 
     public <T> TableInfo<T> getTable(Class<T> clazz) throws Exception {
@@ -77,10 +82,19 @@ public class DBBase {
      * 执行一次就行了 一般在app中调用一次就够了
      * 不要再其他地方在调用 浪费资源
      */
-    public <T> void createTableIfNotExist(Class<T> clazz) throws Exception {
-        SqlInfo sqlInfo = new SqlInfoBuilder<T>().buildCreateTableSqlInfo(getTable(clazz));
-        Log.e(TAG , "创建表的SQL语句为>>>"+sqlInfo.getSql());
-        sqlInfos.add(sqlInfo);
+    private <T> void createTablesIfNotExist(Class<T>[] clazzs) {
+        for (Class<T> clazz :clazzs) {
+            try {
+                SqlInfo sqlInfo = new SqlInfoBuilder<T>().buildCreateTableSqlInfo(getTable(clazz));
+                Log.e(TAG , "创建表的SQL语句为>>>"+sqlInfo.getSql());
+                sqlInfos.add(sqlInfo);
+            }catch (Exception e){
+                if (mConfig.isDebug){
+                    Log.d(TAG ,"建表"+clazz.getName()+"失败");
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public static DBHelper newDBHelper(){
@@ -107,6 +121,11 @@ public class DBBase {
         public boolean openTransaction;//是否开始事务
         public boolean isDebug;
         public DBCallback callback; //数据库创建更新的回调
+
+        public Config(){
+            name = "default.db";
+            version = 1;
+        }
 
         public Config setName(String name) {
             this.name = name;

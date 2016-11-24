@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.setContentView(R.layout.activity_main);
         initView();
 
-
     }
 
     private void initView() {
